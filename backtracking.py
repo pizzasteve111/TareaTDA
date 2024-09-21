@@ -276,6 +276,135 @@ def backtracking_suma(lista, combinacion, resultados, indice, suma, n):
     backtracking_suma(lista, combinacion, resultados, indice + 1, suma, n)
 
 
+def max_sumatoria_n(lista, n):
+    return backtracking_sumatoria(lista,n,[],[],0,0)
+
+def backtracking_sumatoria(lista,n,mejor_sol,sol_actual,suma,indice):
+    #recorri toda la lista
+    if indice==len(lista):
+        #si justo llego a igualar n luego de la iteracion, mi mejor_sol va a ser la         actual
+        if suma==n:
+            mejor_sol.clear()
+            mejor_sol.extend(sol_actual)
+            return mejor_sol
+        #si mi mejor sol no supera a n, devuelvo la sol actual
+        if suma > sum(mejor_sol) and suma<n:
+            mejor_sol.clear()
+            mejor_sol.extend(sol_actual)
+        #para el caso donde mi sol actual no es la mejor sol
+        return mejor_sol
+
+    numero=lista[indice]
+    if suma+numero <=n:
+        sol_actual.append(numero)
+        backtracking_sumatoria(lista,n,mejor_sol,sol_actual,suma+numero,indice+1)
+        sol_actual.pop()
+    
+    mejor_sol =backtracking_sumatoria(lista,n,mejor_sol,sol_actual,suma,indice+1)
+    return mejor_sol
+
+
+def vertex_cover_min(grafo):
+    #inicialmente la mejor solucion son todos los vertices
+    return backtracking_vertex(grafo,grafo.obtener_vertices(),[],0)
+
+#osea, todas las aristas del grafo tienen por lo menos una conexion al vertex
+def backtracking_vertex(grafo,mejor_res,res_actual,indice):
+    vertices=grafo.obtener_vertices()
+
+    #si consigo una sol actual menor a la mejor, la reemplazo
+    if vertex_valido(grafo,res_actual,vertices):
+        if len(res_actual)<len(mejor_res):
+            mejor_res.clear()
+            mejor_res.extend(res_actual)
+        return mejor_res
+
+    #termine de iterar el grafo
+    if indice>=len(vertices):
+        return mejor_res
+    
+    
+    actual = vertices[indice]
+    res_actual.append(actual)
+    backtracking_vertex(grafo,mejor_res,res_actual,indice+1)
+    res_actual.pop()
+    d=set()
+    d.re
+    
+    mejor_res=backtracking_vertex(grafo,mejor_res,res_actual,indice+1)
+    return mejor_res
+
+
+def vertex_valido(grafo,res_actual,vertices):
+    #debe haber una conexion entre todos los vertices del grafo con el vertex
+    for v in vertices:
+        for w in grafo.adyacentes(v):
+            if v not in res_actual and w not in res_actual:
+                return False
+    return True
+
+
+def dominating_set_min(grafo):
+    return backtracking_dominating_set(grafo,[],grafo.obtener_vertices(),0)
+
+def backtracking_dominating_set(grafo,res_actual,mejor_res,indice):
+    vertices=grafo.obtener_vertices()
+    if set_valido(grafo,res_actual,vertices):
+        if len(res_actual)<len(mejor_res):
+            mejor_res.clear()
+            mejor_res.extend(res_actual)
+        return mejor_res
+    
+    if indice>=len(vertices):
+        return mejor_res
+
+    actual=vertices[indice]
+    res_actual.append(actual)
+    backtracking_dominating_set(grafo,res_actual,mejor_res,indice+1)
+    res_actual.pop()
+    
+    mejor_res=backtracking_dominating_set(grafo,res_actual,mejor_res,indice+1)
+    return mejor_res
+
+def set_valido(grafo,res_actual,vertices):
+    es_valido=True
+    for v in vertices:
+        if v not in res_actual:
+            es_valido=False
+        for w in grafo.adyacentes(v):
+            #si v o uno de sus adyacentes esta en el set, ese v es valido
+            # y salto al prox vertice
+            if  w   in res_actual:
+                es_valido=True
+        if not es_valido:
+            return False
+            
+
+    return True
+
+def max_grupos_bodegon(P, W):
+    #cada indice de P te dice la cant de personas de dicho grupo
+    #W son los lugares en total
+    #devolver los grupos que maximizan los lugares
+    
+    return backtracking_bodegon(P,W,[],[],0)
+
+def backtracking_bodegon(P,W,res,mejor_res,indice):
+    if indice==len(P):
+        if sum(res)>=sum(mejor_res):
+            mejor_res.clear()
+            mejor_res.extend(res)
+        return mejor_res
+    
+    actual=P[indice]
+
+    if sum(res)+actual<=W:
+        res.append(actual)
+        backtracking_bodegon(P,W,res,mejor_res,indice+1)
+        res.pop()
+    mejor_res=backtracking_bodegon(P,W,res,mejor_res,indice+1)
+    return mejor_res
+
 
 
     
