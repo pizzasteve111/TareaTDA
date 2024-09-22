@@ -406,6 +406,42 @@ def backtracking_bodegon(P,W,res,mejor_res,indice):
     return mejor_res
 
 
+def contar_ordenamientos(grafo):
+    vertices=grafo.obtener_vertices()
+
+    grados={v:0 for v in vertices}
+    for v in vertices:
+        for w in grafo.adyacentes(v):
+            grados[w]+=1
+    
+    contador=[0]
+    backtracking_topo(grafo,[],contador,grados)
+
+    return contador[0]
+
+def backtracking_topo(grafo,res_actual,contador,grados):
+    vertices=grafo.obtener_vertices()
+
+    for v in vertices:
+        if grados[v]==0 and v not in res_actual:
+            res_actual.append(v)
+
+            for w in grafo.adyacentes(v):
+                grados[w]-=1
+
+            backtracking_topo(grafo,res_actual,contador,grados)
+
+            res_actual.pop()
+            for w in grafo.adyacentes(v):
+                grados[w]+=1
+
+    if len(res_actual)==len(vertices):
+        contador[0]+=1
+
+    
+    return
+
+
 
     
 

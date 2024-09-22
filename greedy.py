@@ -201,7 +201,7 @@ def obtener_invitados(conocidos):
         vertices.add(p1)
         vertices.add(p2)
 
-    grafo= Grafo(list(vertices))
+    grafo= Grafo(vertices_init=list(vertices))
 
     for p1,p2 in conocidos:
         grafo.agregar_arista(p1,p2)

@@ -108,6 +108,41 @@ def mas_de_la_mitad(arr):
 
     return False
 
+#O(n log n)
+def mas_de_la_mitad(arr):
+    if wrapper_mitad(arr,0,len(arr)-1) is not None:
+        return True
+    return False
+
+def wrapper_mitad(arr,ini,fin):
+    if ini==fin:
+        return arr[ini]
+    medio=(ini+fin)//2
+    candidato_izq=wrapper_mitad(arr,ini,medio)
+    candidato_der=wrapper_mitad(arr,medio+1,fin)
+
+    if candidato_der==candidato_izq:
+        return candidato_der
+    
+    apariciones_candidato_der=0
+    apariciones_candidato_izq=0
+    for i in range(ini,fin+1):
+        if arr[i]==candidato_izq:
+            apariciones_candidato_izq+=1
+    
+    for i in range(ini,fin+1):
+        if arr[i]==candidato_der:
+            apariciones_candidato_der+=1
+    
+    if apariciones_candidato_der>(fin-ini +1)//2:
+        return candidato_der
+    elif apariciones_candidato_izq>(fin - ini +1)//2:
+        return candidato_izq
+    
+    return None
+
+
+
     
 
 
