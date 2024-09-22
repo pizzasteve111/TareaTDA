@@ -190,6 +190,46 @@ def bolsas(capacidad, productos):
             bolsas.append([prod])
     return bolsas
 
+from grafo import Grafo
+
+# conocidos: lista de pares de personas que se conocen, cada elemento es un (a,b)
+def obtener_invitados(conocidos):
+    
+    vertices=set()
+
+    for p1,p2 in conocidos:
+        vertices.add(p1)
+        vertices.add(p2)
+
+    grafo= Grafo(list(vertices))
+
+    for p1,p2 in conocidos:
+        grafo.agregar_arista(p1,p2)
+    
+
+
+    return invitados_grafo(grafo)
+
+def invitados_grafo(grafo):
+    invitados=list(grafo.obtener_vertices())
+    hay_cambios=True
+    
+    while hay_cambios:
+        hay_cambios=False
+
+        eliminados=[]
+        for persona in invitados:
+            if len(grafo.adyacentes(persona))<4:
+                eliminados.append(persona)
+                hay_cambios=True
+        
+        for persona in eliminados:
+            if persona in invitados:
+                invitados.remove(persona)
+                grafo.borrar_vertice(persona)
+
+    return invitados
+
             
 
 
