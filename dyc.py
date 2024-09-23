@@ -142,6 +142,69 @@ def wrapper_mitad(arr,ini,fin):
     return None
 
 
+def mas_de_la_mitad_rec(arr):
+    if len(arr)==1:
+        return arr[0]
+    candidatos=[]
+    for i in range(0,len(arr)-1,2):
+        if arr[i]==arr[i+1]:
+            candidatos.append(arr[i])
+    
+    if candidatos==[]:
+        return None
+    
+    candidato_final=mas_de_la_mitad_rec(candidatos)
+
+    if candidato_final is not None and arr.count(candidato_final)> len(arr)//2:
+        return candidato_final
+    if len(arr)%2 != 0 and arr.count(arr[-1])>len(arr)//2:
+        return candidato_final
+    return None
+
+def mas_de_la_mitad(arr):
+    if mas_de_la_mitad_rec(arr) is not None:
+        return True
+    return False
+
+
+#EJ 11
+def mas_de_dos_tercios(arr):
+    _,apariciones=wrapper_tercios(arr,0,len(arr)-1)
+
+    if  apariciones > len(arr) * (2/3):
+        return True
+    return False
+
+
+def contar_apariciones(arr,candidato,ini,fin):
+    cont=0
+    for i in range(ini,fin+1):
+        if candidato==arr[i]:
+            cont+=1
+    return cont
+
+
+
+
+def wrapper_tercios(arr,ini,fin):
+    if ini==fin:
+        return arr[ini],1
+    
+    medio=(ini+fin)//2
+    izq,apariciones_izq=wrapper_tercios(arr,ini,medio)
+    der,apariciones_Der=wrapper_tercios(arr,medio+1,fin)
+
+    if izq==der:
+        return izq,apariciones_Der+apariciones_izq
+
+    total_izq=contar_apariciones(arr,izq,ini,fin)
+    total_Der=contar_apariciones(arr,der,ini,fin)
+
+    if total_Der>total_izq:
+        return der,total_Der
+    else:
+        return izq,total_izq
+
 
     
 
