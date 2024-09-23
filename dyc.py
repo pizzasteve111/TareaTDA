@@ -16,22 +16,33 @@ def wrapper_joya(arr,ini, fin):
         return arr[medio]
     
 
-def raiz(n):
-    if n>2:
-        return n
-    return wrapper_raiz(n,1,n//2)
+def parte_entera_raiz(n):
+    if n == 0:
+        return 0
+    if n == 1 or n == 2:
+        return 1
+    mitad = n // 2
+    return dividir_y_conquistar(n, mitad, n)
 
-def wrapper_raiz(n,mas_bajo,max):
-    if mas_bajo>max:
-        return max
-    medio = (mas_bajo+max)//2
-    cuadrado= medio*medio
-    if cuadrado==n:
-        return medio
-    elif cuadrado<n:
-        return wrapper_raiz(n,medio+1,max)
-    else:
-        return wrapper_raiz(n,mas_bajo,medio)
+def dividir_y_conquistar(n, raiz, cota_sup, cota_inf = None):
+    cuadrado = raiz**2
+    cuadrado_del_siguiente = (raiz + 1)**2
+
+    if cuadrado == n or cuadrado_del_siguiente > n and cuadrado < n:
+        return raiz
+
+    if cuadrado > n: 
+        mitad = raiz // 2
+        if cota_inf != None and mitad < cota_inf:
+            mitad = (cota_inf + raiz) // 2
+            return dividir_y_conquistar(n, mitad, raiz, cota_inf)
+        return dividir_y_conquistar(n, mitad, raiz)
+     
+    else: 
+        cota_inf = raiz
+        mitad = (cota_inf + cota_sup) // 2
+        return dividir_y_conquistar(n, mitad, cota_sup, cota_inf)
+
     
 
 
@@ -168,6 +179,8 @@ def mas_de_la_mitad(arr):
 
 
 #EJ 11
+#Puede time outear porque RPL es una poronga gorda
+#Pero anda bem
 def mas_de_dos_tercios(arr):
     _,apariciones=wrapper_tercios(arr,0,len(arr)-1)
 
@@ -202,8 +215,8 @@ def wrapper_tercios(arr,ini,fin):
 
     if total_Der>total_izq:
         return der,total_Der
-    else:
-        return izq,total_izq
+    
+    return izq,total_izq
 
 
     
