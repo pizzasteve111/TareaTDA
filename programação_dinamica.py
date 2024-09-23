@@ -134,3 +134,8 @@ def getSeleccionadas(optimos,charlas,p):
     #hago el reverse porque en mi while estuve iterando de mayor a menor, quiero devolver las charlas en orden inverso
     seleccionadas.reverse()
     return seleccionadas
+
+#segun entiendo, esta solucion cumpliría con prog dinamica pues:
+#1) resuelvo el problema solucionando sub-problemas(busco el optimo para cada i-esima charla)
+#2)Uso memorizacion porque voy armando arreglos como optimos o p que me van almacenando soluciones parciales a los subproblemas
+#3)Aplico funciones de recurrencia donde optimizo que valores se deben pisar para cada caso
