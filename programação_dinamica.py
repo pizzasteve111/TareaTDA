@@ -209,20 +209,45 @@ def juan_el_vago(trabajos):
 
 #7-mochila
 
-# #(valor,peso)
-# def mochila(elementos,W):
-#     tam=len(elementos)
-#     pesos=[]
-#     valores=[]
-#     for valor,peso in elementos:
-#         pesos.append(peso)
-#         valores.append(valor)
+# cada elemento i de la forma (valor, peso)
+#ecuacion de recurrencia: Opt(N,W)=max(Opt(N-1,W),Opt(N-1,W-peso)+Valor) ,es decir,
+#el valor maximo entre no agregar el elemento o agregarlo(reduciendo peso disponible y sumando el valor del mismo)
+def mochila(elementos, W):
+    tam_arreglo=len(elementos)
+    #hago matriz de dimensiones tam * W
+    optimos=[[0 for _ in range(W+1)] for _ in range(tam_arreglo+1)]
     
-#     mochi=[0] * (W+1)
 
-#     for i in range(tam):
-#         for peso in range(W,pesos[i]-1,-1):
-#             mochi[peso]
+    #recorro la matriz
+
+    for fila in range(1,tam_arreglo+1):
+        for columna in range(1,W+1):
+            #puede entrar algo mas en el peso
+            if elementos[fila-1][1]<=columna:
+                #me quedo re largo, pero sería comparar entre no modificar la mochi acttual o agregarlo y con eso restar el espacio
+                #disponible, pero sumando el valor que aporta el agregado
+                optimos[fila][columna]=max(optimos[fila-1][columna],optimos[fila-1][columna-elementos[fila-1][1]]+elementos[fila-1][0])
+            else:
+                #si el espacio superaba al peso disponible, entonces el optimo para el objeto actual es omitirlo y quedarse
+                #con el valor anterior
+                optimos[fila][columna]=optimos[fila-1][columna]
+
+    return getRes(optimos,W,tam_arreglo,elementos)
+
+def getRes(optimos,W,tam_arreglo,elementos):
+    res=[]
+    for i in range(tam_arreglo,0,-1):
+        #comparo el optimo entre incluir al elemento iterado con el optimo anterior a no considerarlo
+        #si estos difieren, significa que el i-esimo elemento es tomado encuenta para la solucion optima
+        if optimos[i][W]!=optimos[i-1][W]:
+            #appendeo el indice-1 pero porque comienza a contar desde cero
+            res.append(elementos[i-1])
+            #le resto el peso para que quede actualizau
+            W-=elementos[i-1][1]
+
+    #devuelvo la lista inversa pq estuve iterando en sentido contrario
+    res.reverse()
+    return res
 
 
 #8  
@@ -259,3 +284,4 @@ def getRes(optimos,monedas,contador):
                 break
 
     return res
+
