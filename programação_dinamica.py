@@ -139,3 +139,123 @@ def getSeleccionadas(optimos,charlas,p):
 #1) resuelvo el problema solucionando sub-problemas(busco el optimo para cada i-esima charla)
 #2)Uso memorizacion porque voy armando arreglos como optimos o p que me van almacenando soluciones parciales a los subproblemas
 #3)Aplico funciones de recurrencia donde optimizo que valores se deben pisar para cada caso
+
+
+#3 
+
+#ec recurrencia sería: Opt(n)=Opt(n-1)+Opt(n-2)+Opt(n-3)
+
+
+def escalones(n):
+    if n==0 or n==1:
+        return 1
+    if n==2:
+        return 2
+    
+    optimos=[0]*(n+1)
+
+    optimos[0]=1
+    optimos[1]=1
+    optimos[2]=2
+
+    for escalon_i in range(3,n+1):
+        optimos[escalon_i]=optimos[escalon_i-1]+optimos[escalon_i-2]+optimos[escalon_i-3]
+
+    return optimos[n]
+
+#4
+#ec recurrencia= Opt(n)=max(Opt(n-1),Opt(n-2)+arr[n-1])
+
+def get_optimos(trabajos):
+    tam=len(trabajos)
+    if tam==0:
+        return [0]
+    if tam==1:
+        return [0,trabajos[0]]
+    
+    optimos=[0]*(tam+1)
+    optimos[1]=trabajos[0]
+    optimos[2]=max(trabajos[0],trabajos[1])
+    for i in range(3,tam+1):
+        #esto quiere decir, el optimo de i será el máximo entre trabajar el día anterior
+        #o trabajar dos dias anteriores y el actual(lo acumulado hasta anteayer + hoy)
+        optimos[i]=max(optimos[i-1],optimos[i-2]+trabajos[i-1])
+    
+    return optimos
+
+def getRes(optimos,trabajos,contador):
+    res=[]
+    while contador>0:
+        
+        #si el optimo entre trabajar hoy o ayer es lo mismo, significa que juan no trabajó el día actual
+
+        if optimos[contador-1]==optimos[contador]:
+            contador-=1
+        #si son distintos significa que si trabaje el día actual
+        else:
+            res.append(contador-1)
+            contador-=2
+
+    res.reverse()
+    return res
+
+def juan_el_vago(trabajos):
+    optimos=get_optimos(trabajos)
+    res=getRes(optimos,trabajos,len(trabajos))
+    return res
+
+
+#5
+
+#7-mochila
+
+# #(valor,peso)
+# def mochila(elementos,W):
+#     tam=len(elementos)
+#     pesos=[]
+#     valores=[]
+#     for valor,peso in elementos:
+#         pesos.append(peso)
+#         valores.append(valor)
+    
+#     mochi=[0] * (W+1)
+
+#     for i in range(tam):
+#         for peso in range(W,pesos[i]-1,-1):
+#             mochi[peso]
+
+
+#8  
+#ec recurrencia: el optimo para el valor i, min(opt[i],opt[i-moneda_actual]+1)
+#esto quiere decir que para el valor i, su optimo sería el mínimo entre su optimo actual o
+#ese valor-la moneda iterada, el +1 significa que agregarías la moneda que iteras
+
+def cambio(monedas, monto):
+    #cada valor de este arreglo sería el valor optimo para el cambio de valor i
+    optimos=[10000000]*(monto+1)
+    #para 0 pesos necesito 0 monedas
+    optimos[0]=0
+    for moneda in monedas:
+        for i in range(moneda,monto+1):
+            #el optimo para el valor i (que se encuentra entre la moneda y el monto)
+            #es el minimo entre el optimo actual o el valor i-moneda
+            #EJ: si tengo el arreglo  [1, 5, 10], y busco el optimo del valor 2 con la moneda 1
+            #inicialmente seria hacer min(10000000,2-1+1) diciendome que para el valor 2
+            #necesitaría dos monedas
+            optimos[i]=min(optimos[i],optimos[i-moneda]+1)
+    
+    return getRes(optimos,monedas,monto)
+    
+def getRes(optimos,monedas,contador):
+    res=[]
+    while contador>0:
+        for moneda in monedas:
+            #comparamos para que moneda del arreglo llegamos al optimo del valor contador
+            #en caso de que esa moneda cumpla, lo appendeamos
+            if optimos[contador]==optimos[contador-moneda]+1 and contador-moneda>=0:
+                res.append(moneda)
+                contador-=moneda
+                #rompo el ciclo porque ya no hace falta seguir buscando para ese valor
+                break
+
+    return res
