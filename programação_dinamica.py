@@ -1,3 +1,6 @@
+#Ejs obtenidos de:https://algoritmos-rw.github.io/tda_bg/material/guias/
+
+
 #esta es una solucion sin prog dinamica
 
 # def fib(n):
@@ -214,7 +217,8 @@ def juan_el_vago(trabajos):
 #el valor maximo entre no agregar el elemento o agregarlo(reduciendo peso disponible y sumando el valor del mismo)
 def mochila(elementos, W):
     tam_arreglo=len(elementos)
-    #hago matriz de dimensiones tam * W
+    #hago matriz de dimensiones donde la cantidad de fila es la cant_elementos y la cant de 
+    #columnas es el W asignado
     optimos=[[0 for _ in range(W+1)] for _ in range(tam_arreglo+1)]
     
 
@@ -284,4 +288,222 @@ def getRes(optimos,monedas,contador):
                 break
 
     return res
+
+#11
+
+#recurrencia: el optimo de un numero i sería el minimo entre los optimos de (i-1)
+#y de (i//2), esto quiere decir, me quedo con el optimo que tenga la cantidad de pasos mas chica
+#entre los dos y le sumo el paso extra que doy
+
+def operaciones(K):
+    #uno de los arreglos guarda la cantidad de operaciones para un numero i
+    #mientras que el otro guarda los strings
+    optimos=[10000000000]*(K+1)
+    operaciones=[""]*(K+1)
+    #no necesito ninguna operacion para el numero 0
+    optimos[0]=0
+
+    #entendiendo que trabajo con nums enteros, solo puedo duplicar para 
+    #aquellos numeros pares, si mi num es 5 no hay ningun *2 que me ayude a 
+    #conseguirlo
+    for i in range(1,K+1):
+        #evalúo si el optimo actual de i es mayor al optimo del numero
+        #anterior + la operacion actual
+        if optimos[i-1]+1<optimos[i] :
+            optimos[i]=optimos[i-1]+1
+            operaciones[i]="mas1"
+        if optimos[i//2]+1<optimos[i] and i%2==0:
+            #esto significa que si la minima cantidad de operaciones para 
+            #llegar al numero i//2 +1 es menor que el optimo actual
+            #lo ideal sería duplicar i//2 sumandole esa operacion
+            optimos[i]=optimos[i//2]+1
+            operaciones[i]="por2"
+
+    return getRes(K,optimos,operaciones)
+
+def getRes(contador,optimos,operaciones):
+    res=[]
+    while contador>0:
+        res.append(operaciones[contador])
+        if operaciones[contador]=="por2":
+            contador//=2
+        else:
+            contador-=1
+
+    res.reverse()
+    return res
+
+
+#12-
+
+# cada campaña publicitaria i de la forma (Gi, Ci)
+#Me suena a un idem del problema de la mochila
+#A priori, intuiría que el optimo para la campaña i es max(Opt(no hago la i_esima campaña),Opt(hago la campaña y resto su coste al presupuesto, pero sumo el valor obtenido))
+
+
+def carlitos(c_publicitaria, P):
+    #separo el arreglo en dos para mas placer
+    costos=[c_publicitaria[i][1] for i in range(0,len(c_publicitaria))]
+    ganancias=[c_publicitaria[i][0] for i in range(0,len(c_publicitaria))]
+    tam_arreglo=len(c_publicitaria)
+    #repito lo de la mochi, una matriz donde el tamaño de sus col lo determina el P
+    #y las filas por la cantidad de elementos
+    optimos=[[0 for _ in range(P+1)] for _ in range(tam_arreglo+1)]
+
+    for fila in range(1,tam_arreglo+1):
+        for columna in range(1,P+1):
+            #esto vendría a significar, si el costo del item iterado es menor al presupuesto actual
+            #entonces puedo ver de calcular un optimo para las dimensiones dadas
+            #Aplico, entonces, la ec de recurrencia de la mochi
+            if costos[fila-1]<=columna:
+                optimos[fila][columna]=max(optimos[fila-1][columna],optimos[fila-1][columna-costos[fila-1]]+ganancias[fila-1])
+            else:
+                #si entro aca, significa que el costo de la campaña actual es muy grande para el P dado
+                #entonces el optimo sería no realizar la campaña y que su optimo sea la sol anterior
+                optimos[fila][columna]=optimos[fila-1][columna]
+
+    return getRes(optimos,tam_arreglo,P,c_publicitaria,costos)
+
+
+def getRes(optimos,tam_arreglo,P,c_publicitaria,costos):
+    res=[]
+    for i in range(tam_arreglo,0,-1):
+        #si los optimos de la actual y el anterior difieren, significa que el optimo de la campaña actual la considera 
+        if optimos[i][P]!=optimos[i-1][P]:
+            res.append(c_publicitaria[i-1])
+            #voy actualizando el presupuesto en base a la campaña que itero
+            P-=costos[i-1]
+
+    res.reverse()
+    return res
+
+#13
+
+#Bueno, vuelve a ser un ej de mochis :P
+#Copiar y pegar, solo que ajustando a que ahora es un arreglo de un único elemento
+
+def bodegon_dinamico(P, W):
+    tam_arreglo=len(P)
+    #hago matriz de dimensiones donde la cantidad de fila es la cant_elementos y la cant de 
+    #columnas es el W asignado
+    optimos=[[0 for _ in range(W+1)] for _ in range(tam_arreglo+1)]
+
+    for fila in range(1,tam_arreglo+1):
+        for columna in range(1,W+1):
+            if P[fila-1]<=columna:
+                optimos[fila][columna]=max(optimos[fila-1][columna],optimos[fila-1][columna-P[fila-1]]+P[fila-1])
+            else:
+                #si el espacio superaba al peso disponible, entonces el optimo para el objeto actual es omitirlo y quedarse
+                #con el valor anterior
+                optimos[fila][columna]=optimos[fila-1][columna]
+
+    return getRes(P,W,tam_arreglo,optimos)
+
+def getRes(P,W,tam_arreglo,optimos):
+    res=[]
+    for i in range(tam_arreglo,0,-1):
+        if optimos[i][W]!=optimos[i-1][W]:
+            res.append(P[i-1])
+            W-=P[i-1]
+
+    res.reverse()
+    return res
+
+
+#14
+
+#Me suena mucho a Juan el Vago, cambiando los dias adyacentes por casas adyacentes,
+#su ec de recurrencia para la casa i sería Opt(i)=max(Opt(i-1),Opt(i-2)+arr[i-1])
+#vendría ser elegir entre no robar la casa i y quedarme con el optimo de la casa anterior, o
+#robar la casa actual, almacenar su valor, y sumarle el optimo de la casa no adyacente mas cercana
+
+
+#Hay que adicionar el caso de que es circular, entonces la casa 0 y n-1 cumplen adyacencias
+#lo que hago entonces es obtener el optimo tanto para el caso donde robo la primer casa
+#como para el caso donde robo la ultima y devuelvo el maximo entre esos dos
+def lunatico_no_circular(ganancias):
+    tam_arreglo=len(ganancias)
+    if tam_arreglo==0:
+        return []
+    if tam_arreglo==1:
+        return [0]
+    optimos=[0]*(tam_arreglo+1)
+    optimos[1]=ganancias[0]
+    if tam_arreglo>1:
+        optimos[2]=max(ganancias[0],ganancias[1])
+    for i in range(3,tam_arreglo+1):
+        optimos[i]=max(optimos[i-1],optimos[i-2]+ganancias[i-1])
+    
+    return getRes(optimos,tam_arreglo,ganancias)
+
+
+def getRes(optimos,tam_arreglo,ganancias):
+    res=[]
+    while tam_arreglo>0:
+        #si los optimos del actual y el anterior son iguales, significa que no entre a robar
+        #la casa actual
+        if optimos[tam_arreglo]==optimos[tam_arreglo-1]:
+            tam_arreglo-=1
+        else:
+            res.append(tam_arreglo-1)
+            #ni voy a tener en cuenta la casa adyacente
+            tam_arreglo-=2
+
+    res.reverse()
+    return res
+
+def lunatico(ganancias):
+    if sum(ganancias)==0:
+        return []
+    if len(ganancias)==1:
+        return [0]
+    ganancias_excluyo_primera=ganancias[1:]
+    ganancias_excluyo_ultima=ganancias[:-1]
+
+    optimo_excluyo_primera=lunatico_no_circular(ganancias_excluyo_primera)
+    optimo_excluyo_ultima=lunatico_no_circular(ganancias_excluyo_ultima)
+
+    #ajusto el indice sumandole 1 porque omito la casa 0
+    optimo_excluyo_primera=[i+1 for i in optimo_excluyo_primera]
+
+    #calculo la ganancia total tanto de robar la primera como de robar la ultima
+    ganancias_excluyo_primera=sum(ganancias[i] for i in optimo_excluyo_primera)
+    ganancias_excluyo_ultima=sum(ganancias[i] for i in optimo_excluyo_ultima)
+
+    if ganancias_excluyo_ultima>ganancias_excluyo_primera:
+        return optimo_excluyo_ultima
+    return optimo_excluyo_primera
+
+
+#15
+
+#caso base, la soga mide 2
+
+def problema_soga(n):
+    
+    if n == 2:
+        return 1  
+    if n == 3:
+        return 2  
+
+    
+    optimos = [0] * (n + 1)
+    
+    
+    optimos[1] = 1 
+    optimos[2] = 1  
+    optimos[3] = 2 
+
+    
+    for i in range(4, n + 1):
+        #itero en cachitos mayores a la mitad de la soga
+        for cachito in range(1, i // 2 + 1):  # j es el tamaño del primer corte
+            #los optimos puede ser el del caso base, el cacho de la cuerda * el resto, o el cacho
+            #* el optimo del resto
+            optimos[i] = max(optimos[i], cachito * (i - cachito), cachito * optimos[i - cachito])
+
+    return optimos[n]
+
+
+
 
