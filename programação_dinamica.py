@@ -289,6 +289,98 @@ def getRes(optimos,monedas,contador):
 
     return res
 
+#9
+##igual al prob de la mochi
+
+def subset_sum(elementos,v):
+    tam=len(elementos)
+    optimos=[[0 for _ in range (v+1)]for _ in range(tam+1)]
+
+    for fila in range(1,tam+1):
+        for columna in range(v+1):
+            if elementos[fila-1]<=columna:
+                optimos[fila][columna]=max(optimos[fila-1][columna],optimos[fila-1][columna-elementos[fila-1]]+elementos[fila-1])
+            else:
+                optimos[fila][columna]=optimos[fila-1][columna]
+
+    return getRes(elementos,v,optimos,tam)
+
+def getRes(elementos,v,optimos,tam):
+    res=[]
+    for i in range(tam,0,-1):
+        if optimos[i][v]!=optimos[i-1][v]:
+            res.append(elementos[i-1])
+            v-=elementos[i-1]
+
+            if v<0:
+                break
+    res.reverse()
+
+    return res
+
+
+
+
+#10
+
+#ec recurrencia, para el mes i, su optimo sería Opt(i)=min(Opt(ciudad_actual i),Opt(cambio_ciudad)+M)
+#osea, mi criterio va a ser, elijo trabajar en la otra ciudad solo si sus costos(+ mudanza) son
+#menores a los de trabajar en la actual
+def plan_operativo(arreglo_L, arreglo_C, costo_M):
+    n=len(arreglo_L)
+    optimos_C=[0]*(n+1)
+    optimos_L=[0]*(n+1)
+    
+    optimos_C[0]=arreglo_C[0]
+    optimos_L[0]=arreglo_L[0]
+
+    for i in range (1,n):
+
+        optimos_C[i]=min(optimos_C[i-1]+arreglo_C[i],optimos_L[i-1]+arreglo_C[i]+costo_M)
+
+        optimos_L[i]=min(optimos_L[i-1]+arreglo_L[i],optimos_C[i-1]+arreglo_L[i]+costo_M)
+
+    
+
+    #reconstruir esta wea
+    
+
+    
+    return getRes(optimos_L,optimos_C,arreglo_L,arreglo_C,n,costo_M)
+
+def getRes(optimos_L,optimos_C,arreglo_L,arreglo_C,n,costo_M):
+    res=[]
+     
+    #caso para la primer ciudad
+    if optimos_C[n - 1] < optimos_L[n - 1]:
+        res.append("california")
+        ciudad_actual = "california"
+    else:
+        res.append("londres")
+        ciudad_actual = "londres"
+
+    
+    for i in range(n - 2, -1, -1):
+        if ciudad_actual == "california":
+            #si el valor optimo de trabajr en california + costo de otro mes es igual a dicho optimo
+            #si fueran distintos, significa que el mes i venía de Londres
+            #entonces el optimo para el mes i sería londres
+            if optimos_C[i] + arreglo_C[i + 1] == optimos_C[i + 1]:
+                res.append("california")
+            else:
+                res.append("londres")
+                ciudad_actual = "londres"
+        else:
+            if optimos_L[i] + arreglo_L[i + 1] == optimos_L[i + 1]:
+                res.append("londres")
+            else:
+                res.append("california")
+                ciudad_actual = "california"
+
+    res.reverse()
+    return res
+
+
 #11
 
 #recurrencia: el optimo de un numero i sería el minimo entre los optimos de (i-1)
