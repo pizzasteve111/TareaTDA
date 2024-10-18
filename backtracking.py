@@ -80,7 +80,7 @@ def backtracking_coloreo(grafo,vertices,colores,indice,n):
 
     return False
 
-
+#4 
 def independent_set(grafo):
     vertices=grafo.obtener_vertices()
     if not vertices:
@@ -124,6 +124,7 @@ def backtracking(indice,grafo,conjunto,max_conjunto,vertices):
     return max_conjunto
 
 
+#5
 
 def camino_hamiltoniano(grafo):
     #voy probando para que vertice puedo conseguir el camino
@@ -156,6 +157,8 @@ def backtracking_hamilton(grafo,ya_visitados,res,indice,v,vertices):
             res.pop()
 
     return False
+
+#8
 
 def hay_isomorfismo(g1, g2):
     v1=g1.obtener_vertices()
@@ -205,6 +208,8 @@ def backtracking_iso(g1,g2,vertices1,vertices2,imagen,visitados):
 
     return False
 
+#9
+
 
 def obtener_combinaciones(materias):
     resul=[]
@@ -235,6 +240,8 @@ def backtracking_materias(materias,resul,combinaciones,indice):
 
     return combinaciones
 
+#10
+
 
 def sumatoria_dados(n, s):
 
@@ -253,6 +260,9 @@ def backtracking_dado(n,s,resul,combinacion,iteracion,suma):
             resul.pop()
 
     return combinacion
+
+
+#11
 
 def sumatorias_n(lista, n):
     resultados = []  # Lista para almacenar todas las combinaciones válidas
@@ -274,6 +284,8 @@ def backtracking_suma(lista, combinacion, resultados, indice, suma, n):
     # Excluir el elemento actual (backtrack)
     combinacion.pop()
     backtracking_suma(lista, combinacion, resultados, indice + 1, suma, n)
+
+#12
 
 
 def max_sumatoria_n(lista, n):
@@ -303,6 +315,8 @@ def backtracking_sumatoria(lista,n,mejor_sol,sol_actual,suma,indice):
     mejor_sol =backtracking_sumatoria(lista,n,mejor_sol,sol_actual,suma,indice+1)
     return mejor_sol
 
+
+#13
 
 def vertex_cover_min(grafo):
     #inicialmente la mejor solucion son todos los vertices
@@ -344,6 +358,8 @@ def vertex_valido(grafo,res_actual,vertices):
     return True
 
 
+#14
+
 def dominating_set_min(grafo):
     return backtracking_dominating_set(grafo,[],grafo.obtener_vertices(),0)
 
@@ -382,6 +398,8 @@ def set_valido(grafo,res_actual,vertices):
 
     return True
 
+#15
+
 def max_grupos_bodegon(P, W):
     #cada indice de P te dice la cant de personas de dicho grupo
     #W son los lugares en total
@@ -405,6 +423,162 @@ def backtracking_bodegon(P,W,res,mejor_res,indice):
     mejor_res=backtracking_bodegon(P,W,res,mejor_res,indice+1)
     return mejor_res
 
+#16
+#No pueden parar dos colectivos del mismo color en la misma parada
+#por eso mismo, habría que crear un grafo nuevo con los mismos vertices(colectivos)
+#pero que los adyacentes al colectivo no compartan su color
+
+from grafo import Grafo
+
+def pintar_colectivos(colectivos, paradas):
+    #creo el grafo nuevo
+    grafo=Grafo(vertices_init=colectivos)
+    for parada in paradas:
+        #entonces creamos adyacencias entre colectivos basado en sus paradas
+        for i in range(len(parada)):
+            for j in range(i+1,len(parada)):
+                colectivo_1,colectivo_2=parada[i],parada[j]
+                if not grafo.estan_unidos(colectivo_1,colectivo_2):
+
+                    grafo.agregar_arista(colectivo_1,colectivo_2)
+    
+    return coloreo_backtracking(grafo,colectivos,paradas)
+
+def coloreo_backtracking(grafo,colectivos,paradas):
+    #originalmente, todos tienen el color 0
+    colores={c:0 for c in colectivos}
+
+    #originalmente, el color minimo sería un color especial para cada colectivo
+    for cant_color in range(1,len(colectivos)+1):
+        #si con esa cantidad de colores la funcion es True, entonces la devuelvo
+        if coloreo_valido(grafo,colores,0,cant_color,colectivos):
+            #cant minima a colorear
+            return cant_color
+
+    return len(colectivos)#en caso de no poder cumplir el objetivo, hay que pintar todos
+
+def coloreo_valido(grafo,colores,v,cant_color,colectivos):
+    #caso original donde pinto a cada uno de un color distinto
+    if v==len(colectivos):
+        return True
+    
+    #mi vertice actual
+    actual=colectivos[v]
+
+    for color in range(1,cant_color+1):
+        #si no hay problema con el color, se lo asigno
+        #racismo
+        if es_valido_colorear(grafo,colores,actual,color):
+            colores[actual]=color
+            #voy iterando para los vertices siguientes
+            if coloreo_valido(grafo,colores,v+1,cant_color,colectivos):
+                return True
+            #si en algun momento la funcion falla, entonces tengo que retroceder
+            #le borro el color que le asigne al colectivo
+            colores[actual]=0
+
+    return False
+
+#valida que ninguno de sus adyacentes comparta color
+def es_valido_colorear(grafo, colores, v, color):
+    
+    for adyacente in grafo.adyacentes(v):
+        if colores[adyacente] == color:
+            return False
+    return True
+
+#17-Submarinos
+#siento que es parecido al caso de coloreo
+from grafo import Grafo
+#Es un ejercicio parecido a un  vertex cover donde todo vertice del grafo tiene al menos
+#una adyacencia a ese cover. En este caso serían los vertices serían las celdas con submarinos
+#donde sus adyacencias seran submarinos que pueden ser iluminados por el mismo faro
+#Es decir cada vertice tendrá la posicion del submarino en la grilla
+
+
+#esta funcion esta  chatgpteada
+def area_2_cuadros(i,j,fila,columna):
+    area=[]
+    #los max y min estan para que no se pase de indice de la matriz
+    for x in range(max(0,i-2),min(fila,i+3)):
+        for y in range(max(0,j-2),min(columna,j+3)):
+            area.append((x,y))
+    return area
+
+def submarinos(matriz):
+    vertices=[]
+
+    for fila in matriz:
+        if any(fila):  
+            break
+    else:
+        return [] 
+
+    #primera iteracao, agrego vértices
+    for fila in range(len(matriz)):
+        for columna in range(len(matriz[0])):
+
+            if matriz[fila][columna]:
+                vertices.append((fila,columna))
+    
+    grafo=Grafo(vertices_init=vertices)
+
+    for fila in range(len(matriz)):
+        for columna in range(len(matriz[0])):
+            if matriz[fila][columna]:
+                area=area_2_cuadros(fila,columna,len(matriz),len(matriz[0]))
+                for x,y in area:
+                    if matriz[x][y] and (x,y)!=(fila,columna) and not grafo.estan_unidos((fila,columna),(x,y)):
+                        grafo.agregar_arista((fila,columna),(x,y))
+
+    #ya tengo mi grafo con su adyacencias siendo submarinos del mismo rango
+
+
+
+    return backtracking_vertex_cover_min(grafo,vertices,[],0,vertices)
+
+def backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice,vertices):
+    if indice>=len(vertices):
+        if vertex_valido(grafo, res_act, vertices):
+            
+            if len(res_act) < len(mejor_res) or not mejor_res:
+                mejor_res.clear()
+                mejor_res.extend(res_act)
+        return mejor_res
+
+    if mejor_res and len(res_act) >= len(mejor_res):
+        return mejor_res        
+
+    actual=vertices[indice]
+
+
+   
+
+    res_act.append(actual)
+    mejor_res=backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice+1,vertices)
+
+    res_act.pop()
+    mejor_res=backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice+1,vertices)
+
+    return mejor_res
+
+def vertex_valido(grafo, res_act, vertices):
+    # Creamos un conjunto de submarinos que están cubiertos (iluminados) por los faros
+    iluminados = set()
+
+    # Para cada faro en la solución actual, añadimos él mismo y sus adyacentes al conjunto de iluminados
+    for v in res_act:
+        iluminados.add(v)  # El faro ilumina su propia posición
+        iluminados.update(grafo.adyacentes(v))  # El faro ilumina sus adyacentes
+
+    # Verificar si todos los submarinos están cubiertos
+    for v in vertices:
+        if v not in iluminados:
+            return False  # Hay algún submarino que no está iluminado
+    return True  # Todos los submarinos están iluminados
+
+
+#18
 
 def contar_ordenamientos(grafo):
     vertices=grafo.obtener_vertices()
