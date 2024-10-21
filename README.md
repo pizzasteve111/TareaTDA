@@ -1,1 +1,1 @@
-Repou de TDA-Buchwald. Cualquier error que vean, me lo pueden hacer llegar con este link =>
+Repositorio de la materia Teoría de Algoritmos-Buchwald. Al finalizar la cursada, voy a subir las carpetas con los Trabajos Prácticos.
