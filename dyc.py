@@ -218,6 +218,8 @@ def wrapper_tercios(arr,ini,fin):
     
     return izq,total_izq
 
+#13
+
 
     
 

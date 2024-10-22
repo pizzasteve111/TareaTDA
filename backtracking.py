@@ -496,86 +496,150 @@ from grafo import Grafo
 #Es decir cada vertice tendrá la posicion del submarino en la grilla
 
 
-#esta funcion esta  chatgpteada
-def area_2_cuadros(i,j,fila,columna):
-    area=[]
-    #los max y min estan para que no se pase de indice de la matriz
-    for x in range(max(0,i-2),min(fila,i+3)):
-        for y in range(max(0,j-2),min(columna,j+3)):
-            area.append((x,y))
-    return area
-
 def submarinos(matriz):
-    vertices=[]
+    vertices = []
 
+    # Reviso si la matriz tiene submarinos
     for fila in matriz:
         if any(fila):  
             break
     else:
-        return [] 
+        return []  # Si no hay submarinos, retorno lista vacía
 
-    #primera iteracao, agrego vértices
+    # Agrego vértices para los submarinos (las posiciones en la matriz que tienen un submarino)
     for fila in range(len(matriz)):
         for columna in range(len(matriz[0])):
-
             if matriz[fila][columna]:
-                vertices.append((fila,columna))
+                vertices.append((fila, columna))
     
-    grafo=Grafo(vertices_init=vertices)
+    # Crear el grafo con los vértices (submarinos)
+    grafo = Grafo(vertices_init=vertices)
 
-    for fila in range(len(matriz)):
-        for columna in range(len(matriz[0])):
-            if matriz[fila][columna]:
-                area=area_2_cuadros(fila,columna,len(matriz),len(matriz[0]))
-                for x,y in area:
-                    if matriz[x][y] and (x,y)!=(fila,columna) and not grafo.estan_unidos((fila,columna),(x,y)):
-                        grafo.agregar_arista((fila,columna),(x,y))
+    # Conectar los submarinos en base al área de 2 cuadros de distancia
+    for (fila, columna) in vertices:
+        area = area_2_cuadros(fila, columna, len(matriz), len(matriz[0]))
+        for (x, y) in area:
+            if (x, y) in vertices and (x, y) != (fila, columna):
+                if not grafo.estan_unidos((fila, columna), (x, y)):
+                    grafo.agregar_arista((fila, columna), (x, y))
 
-    #ya tengo mi grafo con su adyacencias siendo submarinos del mismo rango
+    # Ordenar vértices por la cantidad de adyacentes (priorizamos vértices que cubren más área)
+    vertices_ordenados = sorted(vertices, key=lambda v: len(grafo.adyacentes(v)), reverse=True)
 
-
-
-    return backtracking_vertex_cover_min(grafo,vertices,[],0,vertices)
-
-def backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice,vertices):
-    if indice>=len(vertices):
-        if vertex_valido(grafo, res_act, vertices):
-            
-            if len(res_act) < len(mejor_res) or not mejor_res:
-                mejor_res.clear()
-                mejor_res.extend(res_act)
-        return mejor_res
-
-    if mejor_res and len(res_act) >= len(mejor_res):
-        return mejor_res        
-
-    actual=vertices[indice]
-
-
-   
-
-    res_act.append(actual)
-    mejor_res=backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice+1,vertices)
-
-    res_act.pop()
-    mejor_res=backtracking_vertex_cover_min(grafo,mejor_res,res_act,indice+1,vertices)
+    # Llamo a la función de backtracking para encontrar el mínimo conjunto de faros
+    mejor_res = []
+    mejor_res = backtracking_vertex_cover_min(grafo, mejor_res, [], 0, vertices_ordenados, set(), len(vertices))
 
     return mejor_res
 
-def vertex_valido(grafo, res_act, vertices):
-    # Creamos un conjunto de submarinos que están cubiertos (iluminados) por los faros
-    iluminados = set()
+def backtracking_vertex_cover_min(grafo, mejor_res, res_act, indice, vertices, iluminados, num_vertices_totales):
+    # Si ya cubrimos todos los submarinos o llegamos al final de los vértices
+    if len(iluminados) >= num_vertices_totales:
+        if not mejor_res or len(res_act) < len(mejor_res):
+            mejor_res.clear()
+            mejor_res.extend(res_act)
+        return mejor_res
 
-    # Para cada faro en la solución actual, añadimos él mismo y sus adyacentes al conjunto de iluminados
-    for v in res_act:
-        iluminados.add(v)  # El faro ilumina su propia posición
-        iluminados.update(grafo.adyacentes(v))  # El faro ilumina sus adyacentes
+    if indice >= len(vertices):
+        return mejor_res
 
-    # Verificar si todos los submarinos están cubiertos
-    for v in vertices:
-        if v not in iluminados:
-            return False  # Hay algún submarino que no está iluminado
-    return True  # Todos los submarinos están iluminados
+    actual = vertices[indice]
+    adyacentes_actual = grafo.adyacentes(actual)
+
+    # Opción 1: Incluir el vértice actual en la solución
+    res_act.append(actual)
+    nuevos_iluminados = iluminados.union({actual}).union(adyacentes_actual)
+    mejor_res = backtracking_vertex_cover_min(grafo, mejor_res, res_act, indice + 1, vertices, nuevos_iluminados, num_vertices_totales)
+
+    # Opción 2: No incluir el vértice actual en la solución
+    res_act.pop()
+    mejor_res = backtracking_vertex_cover_min(grafo, mejor_res, res_act, indice + 1, vertices, iluminados, num_vertices_totales)
+
+    return mejor_res
+
+def vertex_valido(grafo, iluminados, vertices):
+    # Verificar si todos los submarinos están cubiertos (iluminados)
+    return all(v in iluminados for v in vertices)
+
+def area_2_cuadros(i, j, fila, columna):
+    area = []
+    # Los max y min están para que no se pase de índice de la matriz
+    for x in range(max(0, i - 2), min(fila, i + 3)):
+        for y in range(max(0, j - 2), min(columna, j + 3)):
+            area.append((x, y))
+    return area
+
+#solución con matrices-gpteada
+
+def encontrar_submarinos(matriz):
+    submarinos_pos = []
+    for i in range(len(matriz)):
+        for j in range(len(matriz[0])):
+            if matriz[i][j]:
+                submarinos_pos.append((i, j))
+    return submarinos_pos
+
+def calcular_celdas_iluminadas(faro, filas, columnas):
+    direcciones = [(dx, dy) for dx in range(-2, 3) for dy in range(-2, 3)]
+    iluminadas = set()
+    x, y = faro
+    for dx, dy in direcciones:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < filas and 0 <= ny < columnas:
+            iluminadas.add((nx, ny))
+    return iluminadas
+
+def estan_todos_iluminados(submarinos_pos, iluminadas):
+    return all(submarino in iluminadas for submarino in submarinos_pos)
+
+def mejores_posiciones(submarinos_pos, filas, columnas):
+    posiciones = []
+    cobertura = {}
+    for i in range(filas):
+        for j in range(columnas):
+            celdas_iluminadas = calcular_celdas_iluminadas((i, j), filas, columnas)
+            cobertura[(i, j)] = sum(1 for sub in submarinos_pos if sub in celdas_iluminadas)
+    
+    posiciones = sorted(cobertura.keys(), key=lambda pos: cobertura[pos], reverse=True)
+    return posiciones
+
+def backtrack(submarinos_pos, faros, indice, filas, columnas, mejor_solucion, iluminadas, posiciones_candidatas):
+    if estan_todos_iluminados(submarinos_pos, iluminadas):
+        if len(faros) < len(mejor_solucion[0]):
+            mejor_solucion[0] = list(faros)
+        return
+
+    if indice >= len(posiciones_candidatas):
+        return
+
+    x, y = posiciones_candidatas[indice]
+    nuevas_iluminadas = iluminadas | calcular_celdas_iluminadas((x, y), filas, columnas)
+    
+    faros.append((x, y))
+    if len(faros) < len(mejor_solucion[0]):
+        backtrack(submarinos_pos, faros, indice + 1, filas, columnas, mejor_solucion, nuevas_iluminadas, posiciones_candidatas)
+    faros.pop()
+    
+    backtrack(submarinos_pos, faros, indice + 1, filas, columnas, mejor_solucion, iluminadas, posiciones_candidatas)
+
+def submarinos(matriz):
+    if not matriz or not matriz[0]:
+        return [] 
+    
+    filas = len(matriz)
+    columnas = len(matriz[0])
+    submarinos_pos = encontrar_submarinos(matriz)
+    
+    if not submarinos_pos:
+        return [] 
+    
+    posiciones_candidatas = mejores_posiciones(submarinos_pos, filas, columnas)
+    
+    mejor_solucion = [submarinos_pos] 
+    backtrack(submarinos_pos, [], 0, filas, columnas, mejor_solucion, set(), posiciones_candidatas)
+    
+    return mejor_solucion[0]
+
 
 
 #18

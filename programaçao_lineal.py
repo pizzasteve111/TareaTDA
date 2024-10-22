@@ -1,9 +1,11 @@
 #ejercicios de la guia:https://algoritmos-rw.github.io/tda_bg/material/guias/pl/
+#cabe aclarar que para este caso no hay herramienta de corrección de los ejercicios así que las implementaciones pueden tener errores leves
 
 
 import pulp
 #es una forma de llamar mas bonito a las sumatorias que tiene PuLP
 from pulp import LpAffineExpression as Sumatoria
+#importarse una implementación de grafo
 from Grafo import grafo
 
 #1 (valor,peso)
@@ -102,7 +104,7 @@ def dom_set_min(grafo):
     j=[]
     vertices = grafo.obtener_vertices()
 
-    problema=pulp.LpVariable("min_set",pulp.LpMinimize)
+    problema=pulp.LpProblem("min_set",pulp.LpMinimize)
 
     for v in vertices:
         j[v]=pulp.LpVariable(f"j{v}",cat="Binary")
@@ -132,7 +134,7 @@ def mst_min(grafo):
     aristas=grafo.obtener_aristas()
     vertices=grafo.obtener_vertices()
 
-    problema = pulp.LpVariable("mst_minimize",pulp.LpMinimize)
+    problema = pulp.LpProblem("mst_minimize",pulp.LpMinimize)
 
     #cada arista del grafo es una variable binaria
     for (v,w) in aristas:
@@ -150,7 +152,74 @@ def mst_min(grafo):
         
         problema+=pulp.LpSum()
 
+    #incompleto
     problema.solve()
+
+
+# 7   Independent Set Maximo => conjunto de vertices donde ninguno es adyacente del otro, quiero la cantidad máxima
+#cada vertice es una variable binaria donde indican si debe ser asignada, asi mismo todos los adyacentes w deben valer 0 para el vertice asignado
+# sum(J[v]+J[w]<=1) osea que entre el vertice y sus adyacentes puede haber solo una asignación
+
+def max_IndSet(grafo):
+    #es bastante mas cómodo asignar las variables binarias con un diccionario que con una lista
+    j={}
+    res=[]
+    vertices=grafo.obtener_vertices()
+
+    problema = pulp.LpProblem("ind_set",pulp.LpMaximize)
+
+    for v in vertices:
+        j[v]=(pulp.LpVariable(f"j{v}",cat="Binary"))
+
+    problema+=pulp.lpSum(j[v] for v in vertices)
+
+    #restricción
+    for v in vertices:
+        for w in grafo.adyacentes(v):
+            problema+=j[v]+j[w]<=1
+
+    problema.solve()
+
+    for v in vertices:
+        if pulp.value(j[v])==1:
+            res.append(v)
+    
+    return res
+
+#8 min colores de un grafo => el vertice v tiene que tener distinto color a sus adyacentes, creo que para este caso no sería útil usar variables binarias como antes. 
+#
+
+def min_color(grafo):
+    vertices=grafo.obtener_vertices()
+    #en el peor de los casos, cada vertice tiene que tener su propio color
+    colores_max=len(vertices)
+    j={}
+    res={}
+    problema= pulp.LpProblem("coloreo",pulp.LpMinimize)
+
+    for v in vertices:
+        #variables enteras cuyo valor abarca del 1 al colores_max
+        j[v]=pulp.LpVariable(f"j{v}",lowBound=1,upBound=colores_max,cat="Integer")
+
+    for v in vertices:
+        for w in grafo.adyacentes(v):
+            #restriccion del color
+            problema+= abs(j[v]-j[w])>=1
+
+    problema.solve()
+
+    for v in vertices:
+        res[v]=pulp.value(j[v])
+
+    return res
+
+
+
+    
+
+
+    
+
 
 
 
