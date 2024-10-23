@@ -36,7 +36,7 @@ def scheduling(lista_horarios):
     
     return res
 
-
+#6
 #Minimos billetes: devuelvo primero los primeros
 
 def cambio(lista_billetes, precio):
@@ -58,6 +58,7 @@ def cambio(lista_billetes, precio):
 print(cambio([1,3,4],6))
 #No es optimoo debería devolver dos monedas de 3
 
+#7
 def inflacion(prods):
     j=0
     total=0
@@ -75,8 +76,26 @@ def inflacion(prods):
 #Es optimo pues si comprasemos de otra manera siempre terminaríamos gastando mas, lo mejor
 #siempre es comprar lo mas caro antes de que la inflacion lo aumente mucho
 
+#Ej deflacion-choreado del repo de luluu
 
+def precios_deflacion(R):
+    R_copy = R.copy()
+    n = len(R)
+    precio_total = 0
+    precio_minimo = float('inf')
+    for j in range(n):
+        elemento_comprado = -1
+        for i, price in enumerate(R_copy):
+            if price < precio_minimo:
+                precio_minimo = price
+                elemento_comprado = i
+        if elemento_comprado != -1:
+            precio_total += (precio_minimo)/(2**j)
+            del R_copy[elemento_comprado]
+            precio_minimo = float('inf')
+    return precio_total
 
+#8
 def mochila(elementos,W):
     #valor/peso nos indica el valor por cantidad de peso
 
@@ -100,6 +119,7 @@ def mochila(elementos,W):
 
 
 #realizo aquellas que terminan antes
+#9
 
 def minimizar_latencia(L_deadline, T_tareas):
     #Finaliza en F_i= inicio_i+duracion_i
@@ -171,7 +191,7 @@ def bifu(ciudades):
         ciudades=no_cubierto
     return res
 
-
+#11
 def bolsas(capacidad, productos):
     bolsas=[]
     productos.sort()
@@ -190,6 +210,98 @@ def bolsas(capacidad, productos):
             bolsas.append([prod])
     return bolsas
 
+#13 again, choreado de lulu
+
+def cobertura(casas, R, K):
+    casas_ordenadas = sorted(casas)
+
+    torres_colocadas = []
+    torre = 0
+
+    while casas_ordenadas:
+        proxima_torre = casas_ordenadas[0] + R
+
+        # Verificar si la ubicación de la próxima torre excede la longitud de la ruta, si la excede, ponemos la antena justo en la ultima casa antes de que exceda el largo de la ruta
+        if proxima_torre > K:
+            torres_colocadas.append(casas_ordenadas[0])
+            break
+
+        torres_colocadas.append(proxima_torre)
+        casas_ordenadas = [casa for casa in casas_ordenadas if casa > proxima_torre + R]
+
+        torre = proxima_torre
+
+    return torres_colocadas
+
+#14 no lo hice, pero se lo robo a lulu
+# devolver una lista de faros. Cada faro debe ser una tupla con su posición en (x,y)
+# matriz booleana, indica True en las posiciones con submarinos
+def iluminar(matriz, x, y):
+    n = len(matriz)
+    m = len(matriz[0])
+    for i in range(max(0, x-2), min(n, x+3)):
+        for j in range(max(0, y-2), min(m, y+3)):
+            matriz[i][j] = False
+
+def contar_submarinos(matriz, x, y):
+    n = len(matriz)
+    m = len(matriz[0])
+    cuenta_submarinos = 0
+    for i in range(max(0, x-2), min(n, x+3)):
+        for j in range(max(0, y-2), min(m, y+3)):
+            if matriz[i][j]:
+                cuenta_submarinos += 1
+    return cuenta_submarinos
+
+
+def submarinos(matriz):
+
+    n = len(matriz)
+
+    if n == 0:
+        return []
+
+    m = len(matriz[0])
+    faros = []
+
+    while any(any(row) for row in matriz):
+        max_submarinos = 0
+        mejor_posicion = None
+        for i in range(n):
+            for j in range(m):
+                cuenta_submarinos = contar_submarinos(matriz, i, j)
+                if cuenta_submarinos > max_submarinos:
+                    max_submarinos = cuenta_submarinos
+                    mejor_posicion = (i, j)
+        if mejor_posicion:
+            x, y = mejor_posicion
+            faros.append((x, y))
+            iluminar(matriz, x, y)
+
+    return faros
+
+#15
+#idem al ej de las bolsas
+def cajas(capacidad, libros):
+    libros_ordenados = sorted(libros)
+    caja_con_libros = []
+    cajas = []
+
+    for espesor in libros_ordenados:
+        if espesor > capacidad:
+            continue
+        elif sum(caja_con_libros) + espesor <= capacidad:
+            caja_con_libros.append(espesor)
+        else:
+            cajas.append(caja_con_libros)
+            caja_con_libros = [espesor]
+
+    if caja_con_libros:
+        cajas.append(caja_con_libros)
+
+    return cajas
+
+#16
 from grafo import Grafo
 
 # conocidos: lista de pares de personas que se conocen, cada elemento es un (a,b)
