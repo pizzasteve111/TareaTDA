@@ -1,3 +1,5 @@
+#Ejercicios sacados de la guía TDA-Buchwald: https://algoritmos-rw.github.io/tda_bg/material/guias/bt/
+
 #Ej 1
 
 def no_adyacentes(grafo, n):
