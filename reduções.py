@@ -3,7 +3,7 @@
 # Video 3-SAT: https://www.youtube.com/watch?v=GCw07nZckps
 #Ej 3-SAT:  https://www.youtube.com/watch?v=MV8Z_D1mLMU
 
-
+# CUANDO TERMINE ESTA GUÍA, SUBO UN PDF MAS BONITO PARA LEER 
 
 
 #Problema P: Problema cuya solución es polinomial, osea, que debería resolverse en un tiempo lógico acorde al tamaño del imput => debería ser fácil de implementar
@@ -25,6 +25,8 @@
 
 #1 Verificador del Indepent Set => No hay conexiones entre los vértices del set
 #Imagino que se recibe el Set propuesto y el grafo del que se obtuvo
+
+from grafo import Grafo
 
 #Solucion poco eficiente
 def validador_IS(grafo,set,tam_pedido):
@@ -213,9 +215,22 @@ def Nreinis(reinis):
 
 
 
-#7 Problema K-Clique: un grafo para el cual podemos hacer un subconjunto
-#de K vertices para los cuales todos ellos están conectados entre si
+#7 Problema K-Clique: un grafo donde podemos hacer un subconjunto
+#de K vertices para los cuales todos ellos están conectados entre sí
+#Veo si K-clique es npc. Vamos con el famoso cock-levin.
+#Ah no, como demostramos que IS es npc, podemos hacer una reducción  y llegar a kc
+#IS no puede ser mas dificil que kc, IS<=kc
 
+#video: https://www.youtube.com/watch?v=ST1ozPWvgjs
+
+#se explica que, dado un grafo donde hay K-IS, podemos crear un complemento a ese grafo
+#donde agregamos las aristas que no existen en el original y quitamos las existentes
+# Entonces en ese grafo se encontrará un K-clique
+# Si en el grafo original había un 3-IS con los vertices 3,6 y 8, en el complemento hay un 
+#3-clique con esos mismos vértices
+#Entonces, si a partir de IS consigo un kc, este weon es npc pues la reducción de un problema a otro es polinómica. 
+
+#esta wea es polinómica, Kc es np como mínimo
 def validador_Kclique(tam_pedido,grafo,clique):
     if len(clique)!=tam_pedido:
         return False
@@ -227,6 +242,51 @@ def validador_Kclique(tam_pedido,grafo,clique):
                 return False
             
     return True
+
+#recibimos un grafo y un K-IS
+def getKclique(grafo,ind):
+    k=len(ind)
+    k_clique=[]
+    vertices=grafo.obtener_vertices()
+    g_complemento=Grafo(vertices_init=vertices)
+
+    #O(V cuadrau)
+    for v in vertices:
+        for w in vertices:
+            if v!=w and not grafo.estan_unidos(v,w):
+                g_complemento.agregar_arista(v,w)
+
+    k_clique.clear()
+    k_clique.extend(ind)
+    #O(v cuadrático)
+    if validador_Kclique(k,g_complemento,k_clique):
+        return k_clique
+    return None
+
+#8 camino hamiltoniano ==> recorro el grafo en una única iteración sin repetir vértices
+#   ciclo hamiltoniano ==> parecido al anterior, pero ahora el camino debe conducir al primer vértice
+#   sin repetir los vértices durante el camino. Por enunciado, es npc.
+
+# Entonces, deberíamos poder aplicarle una reducción al camino a partir de un ciclo.
+# ¿Cómo? no idea mano, pero se me ocurre que ambos problemas son casi idénticos menos por la parte final.
+#  ¿podría conseguir un camino si solo le corto la vuelta al vértice de origen? Sigan viendo
+
+#como obtuvimos el camino a partir de una reducción de un npc, entonces camino
+#también es NP-COMPLETO.
+def get_CaminoH(grafo,cicloh):
+    #grafo? no se yo no lo invité
+    camino=[]
+    vertice_inicial=cicloh[0]
+    camino.append(vertice_inicial)
+    for v in cicloh:
+        if v!=vertice_inicial:
+            camino.append(vertice_inicial)
+
+    return camino
+
+#9 Continuara...
+
+
 
 
 
