@@ -284,7 +284,39 @@ def get_CaminoH(grafo,cicloh):
 
     return camino
 
-#9 Continuara...
+#9 3-Coloring ==> Los vértices del mismo color no pueden tener adyacencias entre si.
+#No justifico que es npc porque el enunciado ya dice que lo asumamos.
+# Lo que se hace es agregar un vertice del tercer color y unirlo a todo el grafo, de esta manera no puede existir ningun otro vertice de ese color.
+#  entonces pasamos de un tri-partito a bi. Lo mismo para cualquier K-partito, creamos k-3 vertices de color único que conecten a todo el grafo y repetimos el proceso.
+
+
+def verificador_Npartito(grafo,colores,n):
+    vertices=grafo.obtener_vertices()
+    if len(colores)!=n:
+        return False
+    for v in vertices:
+        for w in grafo.adyacentes(v):
+            if colores[v]==colores[w]:
+                return False
+    return True
+
+#falta hacer el codigo de la reducción
+
+#10 Subset sum ==> dado un conj de numerillos y un valor, ver con que subconjunto de esos nums se puede alcanzar dicho valor. NP-C por enunciau.
+# Problema mochi ==>maximizar el valor que se puede acumular dada una limitación del peso. 
+# SS es básicamente lo mismo que la mochi, solo que en esta última se puede no alcanzar el valor dado y aún así ser válida(es el valor acumulado mas alto posible, puede no igualar todo el peso disponible)
+# Habría que hacer un SS pero sin ser tan tajantes a que el subconjunto iguale el valor, mientras sea el mas aproximau, joya.
+# Bueno, en realidad, los dos problemas son iguales XD (ver el archivo con dinámica y literal son lo mismo) entonces no hay que hacer mucho.
+#La única diferencia que veo en código es que la mochi trabaja para tuplas y el otro para ints comunes, pero la ec.recurrencia es the same shet
+#Si es np-completo, por cambiarle el nombre y meterle mas lore no va a dejar de ser un npc.
+
+# 11
+
+
+  
+
+
+    
 
 
 

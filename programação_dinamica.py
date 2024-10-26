@@ -292,6 +292,7 @@ def getRes(optimos,monedas,contador):
 #9
 ##igual al prob de la mochi
 
+
 def subset_sum(elementos,v):
     tam=len(elementos)
     optimos=[[0 for _ in range (v+1)]for _ in range(tam+1)]
