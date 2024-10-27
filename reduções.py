@@ -2,6 +2,7 @@
 # Clase no grabada: https://www.youtube.com/watch?v=rg1vwVsaJMo
 # Video 3-SAT: https://www.youtube.com/watch?v=GCw07nZckps
 #Ej 3-SAT:  https://www.youtube.com/watch?v=MV8Z_D1mLMU
+#P-SPACE: https://www.youtube.com/watch?v=a_JXkCBQpX0
 
 # CUANDO TERMINE ESTA GUÍA, SUBO UN PDF MAS BONITO PARA LEER 
 
@@ -14,7 +15,7 @@
 #Problema NP-Completo: si encontras una solución eficiente para este problema, será eficiente para todo NP.
 #Teorema de Cook-Levin: Asegura que el problema de SAT es Np-completo
 # V:OR, ^:AND, NOT
-
+#Pspace: todos los problemas resolubles en espacio polinomial, NO tiempo polinomial como en P. Mide cuanto espacio toma un algoritmo en ejecutarse, se busca que el crecimiento de la memoria sea poli.
 #Literals: variables booleanas(1-0), True=1,False=0
 #Problema 3-SAT: tengo cláusulas(conjunto de 3 literals)
 #Algo del estilo => (notX1 v X2 v X3)^(X1 v notX2 v X3)^(X1 v X2 v X3)^(notX1 v notX2 v notX3)
@@ -310,7 +311,24 @@ def verificador_Npartito(grafo,colores,n):
 #La única diferencia que veo en código es que la mochi trabaja para tuplas y el otro para ints comunes, pero la ec.recurrencia es the same shet
 #Si es np-completo, por cambiarle el nombre y meterle mas lore no va a dejar de ser un npc.
 
-# 11
+# 11 ==> sería un subset sum pero donde quiero todos los subconjuntos posibles.
+# No pertenece a Pspace porque su complejidad espacial no es polinómica. Como nos aseguramos que si lo sea? si solo almacena lo mínimo y necesario para 
+#acercarnos a la solución, un poco como backtracking donde almacenamos datos parciales pero los descartamos cuando no nos sirven. Lo otro implica una especie de fuerza bruta donde
+# guardamos absolutamente todas las soluciones que sirvan.
+#La cantidad total de subconjuntos posibles para una lista de largo L sería 2^L. Por qué??
+# Es porque cada elemento tiene dos opciones: Agregarse o no al subconjunto. Entonces te queda algo como 2x2x2x2... hasta L.
+#Como tendría complejidad espacial O(2^L), esto es exponencial y no polinomial. No es PSpace
+
+# 12 ==> Idem del ej mochila, pero acá solo queremos una solución que cumpla. En este caso, si esta bien implementado con backtracking, sí pertenecería a Pspace pues solo haría falta almacenar datos parciales
+# y borrarlos en caso de que no aporten al subconjunto. Su complejidad espacial sería O(N) pues en el peor de los casos almacenaríamos todos los elementos del arreglo.
+
+#13 ==> To-do
+
+#14 ==> Minimizar cantidad de figuritas a dar y que cumpla el monto pedido. Por lo que entendí, sería como un subset-sum minimizando el tamaño del sub-conjunto.
+
+#Primero habría que ver que Carlito´s problem es NP. Continuará..
+
+
 
 
   
