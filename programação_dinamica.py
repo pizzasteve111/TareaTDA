@@ -290,7 +290,7 @@ def getRes(optimos,monedas,contador):
     return res
 
 #9
-##igual al prob de la mochi
+##igual al prob de la mochi.
 
 
 def subset_sum(elementos,v):
