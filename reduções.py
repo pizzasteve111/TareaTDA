@@ -325,8 +325,44 @@ def verificador_Npartito(grafo,colores,n):
 #13 ==> To-do
 
 #14 ==> Minimizar cantidad de figuritas a dar y que cumpla el monto pedido. Por lo que entendí, sería como un subset-sum minimizando el tamaño del sub-conjunto.
+#El detalle de que existan figuritas que valen 1 nos asegura que siempre alcanzamos el monto que piden los proveedores. Esto ayuda para los casos donde el subset sum no podía cubrir todo el valor.
+#Entonces yo aplico subset sum al arreglo de figuritas y me puede devolver ya sea un subconjunto que cubre todo el valor, o me puede devolver el que se acerque mas al valor( En esto último le meto figuritas de 1)
 
-#Primero habría que ver que Carlito´s problem es NP. Continuará..
+#Validador Carlito: tengo un valor k que es la mínima cantidad que pido de figuritas
+#Creo que solo me importaría que sea cantidad mínima y que cubra el monto pedido. Complejidad temporal de O(n) y espacial de O(n) tmb
+#Esta wea es NP como mínimo.
+def validador_carlito(subset_sum,k,monto):
+    return len(subset_sum) <= k and sum(subset_sum) == monto
+
+#Carlito´s Problem
+#Si con una reducción de un problema NPC logré resolverlo, carlito es un npc.
+def carlito_carlito(figuritas,monto,k):
+    figuritas.sort(reverse=True)
+    #Esta función es como mi caja negra, solo se que Messi me la resuelve
+    ss=subset_sum_implementado(figuritas,monto)
+    acumulado=sum(ss)
+    while acumulado<monto:
+        ss.append(1)
+        acumulado+=1
+    
+    if validador_carlito(ss,k,monto):
+        return ss
+    return None
+
+#15 estos submarinos me tienen reventado es literal el peor problema de la materia.
+# Si los vértices de un grafo son las casillas, un vertex cover de ese grafo serían los faros porque cubrirían al submarino con todas sus adyacencias.
+
+#A terminar
+def submarinos(matriz):
+    vertices=[]
+    for fila in range(len(matriz)):
+        for columna in range(len(matriz[0])):
+            vertices.append(matriz[fila][columna])
+
+#17
+    
+    
+
 
 
 
