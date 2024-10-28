@@ -330,9 +330,8 @@ def verificador_Npartito(grafo,colores,n):
 
 #Validador Carlito: tengo un valor k que es la mínima cantidad que pido de figuritas
 #Creo que solo me importaría que sea cantidad mínima y que cubra el monto pedido. Complejidad temporal de O(n) y espacial de O(n) tmb
-#Esta wea es NP como mínimo.
-def validador_carlito(subset_sum,k,monto):
-    return len(subset_sum) <= k and sum(subset_sum) == monto
+
+
 
 #Carlito´s Problem
 #Si con una reducción de un problema NPC logré resolverlo, carlito es un npc.
@@ -348,6 +347,19 @@ def carlito_carlito(figuritas,monto,k):
     if validador_carlito(ss,k,monto):
         return ss
     return None
+#En realidad esto es nada que ver porque me piden un problema de decisión y no de optimización. Tengo que devolver si para ciertos parámetros es posible resolver el problema.
+
+def decisión_subset_sum(conjunto,k):
+    sub_conjunto=backtrack_subset_sum(conjunto,k)
+    return sum(sub_conjunto)==k
+
+#Este es un validador de carlitos, trabaja en la misma complejidad que SS en tiempo polinomial, así que es por lo menos NP
+def decision_carlito(figuritas,k,minimo):
+    figuritas.sort(reverse=True)
+    sub_figuritas=backtrack_subset_sum(figuritas,k)
+    #verifico que se cumpla el monto y que como mucho sea del tamaño mínimo
+    return sum(sub_figuritas)==k and len(sub_figuritas)<=minimo
+#Pude resolver el problema de charly con SS, es NPc también
 
 #15 estos submarinos me tienen reventado es literal el peor problema de la materia.
 # Si los vértices de un grafo son las casillas, un vertex cover de ese grafo serían los faros porque cubrirían al submarino con todas sus adyacencias.
@@ -359,8 +371,124 @@ def submarinos(matriz):
         for columna in range(len(matriz[0])):
             vertices.append(matriz[fila][columna])
 
-#17
+#16 Hitting set problem ==> tengo un conjunto de N elementos del que puedo obtener M subconjuntos
+#Tengo que ver, si para un valor K, existe un conjunto <=K que tenga un elemento de cada uno de los M subconjuntos.
+#Primero tendría que ver si este problema es NP, para eso, creo un validador
+
+#Validador con complejidad Polinomial, por ahora es NP
+def validador_hitting_set(solucion,subconjuntos,k,m):
+    #tomo a los subconjuntos como una lista de listas
+    #solución lo tomo como un set de elementos
+    #O(n) en caso de que la solucion tenga todos los elementos
+    if len(solucion)>k or len(subconjuntos)!=m:
+        return False
+    #O(M*L) siendo M la cantidad de subconjuntos y L el tamaño(aproximado) de estos
+    for conjunto in subconjuntos:
+        es_valido=False
+        for elemento in conjunto:
+            #O(1)
+            if elemento in solucion:
+                es_valido=True
+                break
+        if not es_valido:
+            return False
+    return True
+
+#Creo que si queremos reducir a partir de un NP-C podríamos usar Vertex Cover. Pues el subconjunto C sería aquel conjunto de vértices que tiene
+#adyacencias con todo el grafo, osea que para cualquier subconjuntos del grafo tendríamos una o mas conexiones al cover.
+#Asumo que el conjunto viene en forma de grafo, los subconjuntos es una lista de listas
+def hitting_set(grafo,subconjuntos,k,m):
+    solucion=set(vertex_cover(grafo))
+    if validador_hitting_set(solucion,subconjuntos,k,m):
+        return solucion
+    return None
+
+#17 Tenemos que ubicar un guardián en cada esquina(cubriendo todas las que tiene enfrente) y ya nos dicen que este es un NPc. Considero que si queremos
+#vigilar todas las calles, habría que pensarlo como un Vertex Cover, teniendo a los vértices como las esquinas(las 4 esquinas por vértice) y las aristas siendo calles.
+#Conseguimos el conjunto de vértices que cubran todas las calles y mandamos ahí a los guardianes.
+
+#Copio y pego el validador VC de los primeros ejs
+def validador_VC(grafo, cover, tam_pedido):
+    es_VC=True
+    if len(cover) > tam_pedido:
+        es_VC=False
+
+    for v in grafo.obtener_vertices():
+        for w in grafo.adyacentes(v):
+            if v not in cover and w not in cover:
+                es_VC=False
+    return es_VC
+
+#18 No hice flujo todavía uu
+
+#19 Demostrar que dominating set es NPc.
+
+#Por ahora es NP
+def validador_dominating(grafo,set,k):
+    vertices=grafo.obtener_vertices()
+    if len(set)>k:
+        return False
+    #O(V^2)
+    for v in vertices:
+        if v not in set:
+            es_valido=False
+            for s in set:
+                if grafo.estan_unidos(v,s):
+                    es_valido=True
+        if not es_valido:
+            return False
+    return True
+
+#Es npc
+def getDominating(grafo,cover,k):
+    vertices=grafo.obtener_vertices()
+    dset=set(cover)
+    #solo me tendría que fijar si hay algun vertice que no pertenezca al cover, entonces lo recorro y veo si tiene un adyacente en el cover.
+    #En caso negativo, lo agrego
+    for v in vertices:
+        if v not in dset:
+            conectau=False
+            for c in cover:
+                if grafo.estan_unidos(c,v):
+                    conectau=True
+                    break
+            if not conectau:
+                dset.add(v)
+    if validador_dominating(grafo,dset,k):
+        return dset
+    return None
+
+#20 Path Selection ==> dado un conjunto de caminos que recorren el grafo, ¿es posible seleccionar K caminos y que no compartan vértices entre si?
+#verifico que sea NP
+
+#Polinomial, es Np
+def verificador_path(grafo,caminos,solucion,k):
+    #solucion sería una lista de k listas que almacenan un camino c/u
+    if len(solucion)>k:
+        return False
+    #O(K^2 * V) siendo K la cantidad de caminos guardados y V los vertices que hay en cada camino(suponiendo que no hay una grandísima diferencia de tamaño)
+    for camino in solucion:
+        #habría que verificar que cada vértice del camino no se repita en los otros caminos
+        #En realidad, existe una solución con mejor complejidad, pero ya me encariñé de esta que hice
+        #Se podría ir recorriendo solo una vez e ir agregando los vértices recorridos a un set y listo te queda k*v con esa
+        for v in camino:
+            for w in solucion:
+                if w!=camino and v in w:
+                    return False
+    #Entonces, si cada v no se repite en ningún otro camino, tamos bien
+    return True
+
+#La semejanza con IS sería que ese te busca conjunto de K vertices independientes, pero este te pide K caminos
+
+
     
+
+
+
+
+
+#22 A veces pido que hubiera entrado la de kolo muani solo para que no vivan repitiendo el chiste de francia segundo. Es 2024 chicos ya está.
+
     
 
 
