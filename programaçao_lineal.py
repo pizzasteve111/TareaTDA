@@ -6,7 +6,7 @@ import pulp
 #es una forma de llamar mas bonito a las sumatorias que tiene PuLP
 from pulp import LpAffineExpression as Sumatoria
 #importarse una implementación de grafo
-from Grafo import grafo
+from grafo import Grafo
 
 #1 (valor,peso)
 def mochila(v: list[int],w: list[int],W: int):
