@@ -210,6 +210,22 @@ def bolsas(capacidad, productos):
             bolsas.append([prod])
     return bolsas
 
+#12 Km Mafias
+#simil al problema de scheduling
+def arnook(kilometros):
+    permisos=[]
+    #ordeno de fin mas próximo a menos proximo
+    kilometros.sort(key=lambda x: x[1])
+    
+    fin=0
+    for ini,fin_ruta in kilometros:
+        #el pedido arranca despues de lo ya solicitado, entonces es válido garantizarlo
+        if ini>=fin:
+            permisos.append((ini,fin_ruta))
+            fin=fin_ruta
+    return permisos
+        
+
 #13 again, choreado de lulu
 
 def cobertura(casas, R, K):
@@ -341,6 +357,11 @@ def invitados_grafo(grafo):
                 grafo.borrar_vertice(persona)
 
     return invitados
+
+
+
+
+
 
             
 

@@ -220,6 +220,57 @@ def wrapper_tercios(arr,ini,fin):
 
 #13
 
+def max_subarray(arreglo):
+    _,ini,fin= wrapper_massum(arreglo,0,len(arreglo)-1)
+    return arreglo[ini,fin+1]
+
+def wrapper_massum(arr,ini,fin):
+    if ini==fin:
+        return arr[ini],ini,fin
+    
+    medio=(ini+fin)//2
+
+    suma_izq,izq_ini,izq_fin= wrapper_massum(arr,ini,medio)
+    suma_der,der_ini,der_fin=wrapper_massum(arr,medio+1,fin)
+
+    cruce_sum,cruce_ini,cruce_fin = hallar_maxS(arr,ini,medio,fin)
+
+    if suma_izq >= suma_der and cruce_sum<=suma_izq:
+        return suma_izq,izq_ini,izq_fin
+    elif suma_der>=suma_izq and cruce_sum<=suma_der:
+        return suma_der,der_ini,der_fin
+    else:
+        return cruce_sum, cruce_ini, cruce_fin
+    
+
+def hallar_masS(arr,ini,medio,fin):
+    suma_izq,suma_der=[-10000],[-10000]
+    izq_max,der_max=medio,medio+1
+
+    izq_act,der_act=[0],[0]
+
+    #busco la suma máxima a la izquierda
+    #itero desde el medio hasta el final
+    #se itera desde el medio hacia los costados
+    #para que la suma sea contigua y se pueda tener
+    #en cuenta el elemento del medio en las sumas
+    for i in range(medio,ini-1,-1):
+        izq_act[0]+=arr[i]
+        if izq_act[0]>=suma_izq[0]:
+            suma_izq.clear()
+            suma_izq.extend(izq_act)
+    
+    for i in range(medio+1,fin+1):
+        der_act+=arr[i]
+        if der_act[0]>der_max[0]:
+            suma_der.clear()
+            der_max.extend(der_act)
+
+    return der_max+izq_max, 
+    
+
+
+
 
     
 

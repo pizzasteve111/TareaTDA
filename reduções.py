@@ -479,6 +479,8 @@ def verificador_path(grafo,caminos,solucion,k):
     return True
 
 #La semejanza con IS sería que ese te busca conjunto de K vertices independientes, pero este te pide K caminos
+#Para conseguir Path a través de IS lo que hago es crear un grafo con cada path como vértice y que las aristas
+#sean a otros paths donde se comparten vértices. El IS nos devolverá el conjunto de paths que no comparten vértices
 
 
     

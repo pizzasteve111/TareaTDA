@@ -84,7 +84,8 @@ def vertex_cover_min(grafo):
 
     for v in vertices:
         for w in grafo.adyacentes(v):
-            problema+=j[v]+j[w]<=1
+            #mínimamente uno de los dos vertices deben estar en el cover, sino si ambos son 0 significa que no está asegurada su conexion
+            problema+=j[v]+j[w]>=1
 
     problema.solve()
 
