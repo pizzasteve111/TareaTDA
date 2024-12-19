@@ -216,11 +216,4 @@ def min_color(grafo):
 
 
 
-    
-
-
-    
-
-
-
 
